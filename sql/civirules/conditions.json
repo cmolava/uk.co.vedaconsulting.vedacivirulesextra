@@ -1,0 +1,4 @@
+[
+  {"name":"membership_last_paidby","label":"Membership Last Paid By Method(s)","class_name":"CRM_Civirules_Condition_MembershipLastPaidBy"},
+  {"name":"veda_membership_has_status_override","label":"Membership has status overriden","class_name":"CRM_Civirules_Condition_MembershipHasStatusOverride"}
+]

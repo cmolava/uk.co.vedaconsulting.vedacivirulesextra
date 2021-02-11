@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/admin/civirulesextra/action/membershipupdatestatus</path>
+    <page_callback>CRM_Vedacivirulesextra_Form_Civirules_Action_MembershipUpdateStatus</page_callback>
+    <title>Civirules_Action_MembershipUpdateStatus</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>
