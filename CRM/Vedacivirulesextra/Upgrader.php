@@ -83,6 +83,22 @@ class CRM_Vedacivirulesextra_Upgrader extends CRM_Vedacivirulesextra_Upgrader_Ba
     return TRUE;
   } // */
 
+  /**
+   * Update/insert CiviRules Conditions and Actions.
+   *
+   * @return TRUE on success
+   * @throws Exception
+   *
+   **/
+  public function upgrade_4202() {
+    if (!method_exists('CRM_Civirules_Utils_Upgrader', 'insertTriggersFromJson')) {
+      throw new Exception('Method CRM_Civirules_Utils_Upgrader::insertTriggersFromJson() not found. Is the CiviRules extension enabled?');
+    }
+    CRM_Civirules_Utils_Upgrader::insertTriggersFromJson($this->extensionDir . DIRECTORY_SEPARATOR . 'sql/civirules/triggers.json');
+    return TRUE;
+  } // */
+
+
 
 
 
