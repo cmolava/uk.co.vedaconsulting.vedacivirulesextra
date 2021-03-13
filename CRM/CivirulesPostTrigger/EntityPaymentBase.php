@@ -1,17 +1,14 @@
 <?php
 
-use CRM_Vedacivirulesextra_ExtensionUtil as E;
-
 /**
- * Class for CiviRules post trigger handling payment
+ * Class for CiviRules post trigger handling payment.
  *
  * @license AGPL-3.0
  */
-
 class CRM_CivirulesPostTrigger_EntityPaymentBase extends CRM_Civirules_Trigger_Post {
 
   /**
-   * To prevent rules being triggered multiple times, we keep a 
+   * To prevent rules being triggered multiple times, we keep a
    * list of  rule ids  and entity ids already triggered.
    */
   static protected $triggeredRules = [];
@@ -23,7 +20,7 @@ class CRM_CivirulesPostTrigger_EntityPaymentBase extends CRM_Civirules_Trigger_P
    * This is used to create Entity Definitions.
    * Sub-classes should override.
    *
-   * @see CRM_CivirulesPostTrigger_EntityPaymentBase::getAdditionalEntities().
+   * @see CRM_CivirulesPostTrigger_EntityPaymentBase::getAdditionalEntities()
    */
   protected function getAdditionalEntityClasses() {
     return [
@@ -32,7 +29,7 @@ class CRM_CivirulesPostTrigger_EntityPaymentBase extends CRM_Civirules_Trigger_P
   }
 
   /**
-   * Returns an array of entities on which the trigger reacts
+   * Returns an array of entities on which the trigger reacts.
    *
    * @return CRM_Civirules_TriggerData_EntityDefinition
    */
@@ -61,37 +58,43 @@ class CRM_CivirulesPostTrigger_EntityPaymentBase extends CRM_Civirules_Trigger_P
       $entity_definitions[] = new CRM_Civirules_TriggerData_EntityDefinition($name, $name, $class);
     }
     return $entity_definitions;
-  
+
   }
 
+  /**
+   *
+   */
   public function alterTriggerData(CRM_Civirules_TriggerData_TriggerData &$triggerData) {
     $membership_payment = $triggerData->getEntityData('MembershipPayment');
     if ($membership_payment['contribution_id']) {
       $contribution = $this->crm('Contribution', 'getsingle', ['id' => $membership_payment['contribution_id']]);
       $triggerData->setEntityData('Contribution', $contribution);
-    } 
+    }
     if ($membership_payment['membership_id']) {
       $membership = $this->crm('Membership', 'getsingle', ['id' => $membership_payment['membership_id']]);
       $triggerData->setEntityData('Membership', $membership);
-    } 
+    }
   }
 
+  /**
+   *
+   */
   protected function crm($entity, $op, $params) {
     try {
       $result = civicrm_api3($entity, $op, $params);
       return $result;
     }
     catch (Exception $e) {
-     //
     }
   }
 
   /**
    * This is mentioned in the docs but is not invoked anywhere?
+   *
    * @see https://docs.civicrm.org/civirules/en/latest/trigger/
    */
   public function checkTrigger() {
-  
+
   }
 
   /**
@@ -101,7 +104,6 @@ class CRM_CivirulesPostTrigger_EntityPaymentBase extends CRM_Civirules_Trigger_P
   public function hasAlreadyTriggered($objectId) {
     $ruleId = $this->getRuleId();
     if (empty(self::$triggeredRules[$ruleId][$objectId])) {
-      // 
       self::$triggeredRules[$ruleId][$objectId] = 1;
       return FALSE;
     }
@@ -109,7 +111,7 @@ class CRM_CivirulesPostTrigger_EntityPaymentBase extends CRM_Civirules_Trigger_P
   }
 
   /**
-   * Trigger a rule for this trigger
+   * Trigger a rule for this trigger.
    *
    * @param $op
    * @param $objectName
