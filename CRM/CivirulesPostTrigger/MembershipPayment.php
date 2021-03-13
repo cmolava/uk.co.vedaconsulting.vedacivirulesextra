@@ -11,6 +11,12 @@ use CRM_Vedacivirulesextra_ExtensionUtil as E;
 class CRM_CivirulesPostTrigger_MembershipPayment extends CRM_Civirules_Trigger_Post {
 
   /**
+   * To prevent rules being triggered multiple times, we keep a 
+   * list of the rule ids  and entity ids.
+   */
+  static protected $triggeredRules = [];
+
+  /**
    * Returns an array of entities on which the trigger reacts
    *
    * @return CRM_Civirules_TriggerData_EntityDefinition
@@ -27,6 +33,7 @@ class CRM_CivirulesPostTrigger_MembershipPayment extends CRM_Civirules_Trigger_P
   protected function getDaoClassName() {
     return 'CRM_Member_DAO_MembershipPayment';
   }
+
   public function getAdditionalEntities() {
     $entity_definitions = parent::getAdditionalEntities();
     $definitions = [
@@ -74,6 +81,28 @@ class CRM_CivirulesPostTrigger_MembershipPayment extends CRM_Civirules_Trigger_P
   }
 
   /**
+   * This is mentioned in the docs but is not invoked anywhere?
+   * @see https://docs.civicrm.org/civirules/en/latest/trigger/
+   */
+  public function checkTrigger() {
+  
+  }
+
+  /**
+   * Check whether a rule has already been triggered with the object in this request.
+   * This can be used to avoid duplicate triggers from multiple post hook invocations.
+   */
+  public function hasAlreadyTriggered($objectId) {
+    $ruleId = $this->getRuleId();
+    if (empty(self::$triggeredRules[$ruleId][$objectId])) {
+      // 
+      self::$triggeredRules[$ruleId][$objectId] = 1;
+      return FALSE;
+    }
+    return TRUE;
+  }
+
+  /**
    * Trigger a rule for this trigger
    *
    * @param $op
@@ -82,7 +111,9 @@ class CRM_CivirulesPostTrigger_MembershipPayment extends CRM_Civirules_Trigger_P
    * @param $objectRef
    */
   public function triggerTrigger($op, $objectName, $objectId, $objectRef) {
-    return parent::triggerTrigger($op, $objectName, $objectId, $objectRef);
+    if (!$this->hasAlreadyTriggered($objectId)) {
+      return parent::triggerTrigger($op, $objectName, $objectId, $objectRef);
+    }
   }
 
 }
