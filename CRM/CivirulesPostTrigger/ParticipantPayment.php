@@ -3,12 +3,12 @@
 use CRM_Vedacivirulesextra_ExtensionUtil as E;
 
 /**
- * Class for CiviRules post trigger handling - MembershipPayment
+ * Class for CiviRules post trigger handling - ParticipantPayment
  *
  * @license AGPL-3.0
  */
 
-class CRM_CivirulesPostTrigger_MembershipPayment extends CRM_Civirules_Trigger_Post {
+class CRM_CivirulesPostTrigger_ParticipantPayment extends CRM_Civirules_Trigger_Post {
 
   /**
    * To prevent rules being triggered multiple times, we keep a 
@@ -22,7 +22,7 @@ class CRM_CivirulesPostTrigger_MembershipPayment extends CRM_Civirules_Trigger_P
    * @return CRM_Civirules_TriggerData_EntityDefinition
    */
   protected function reactOnEntity() {
-    return new CRM_Civirules_TriggerData_EntityDefinition($this->objectName, $this->objectName, $this->getDaoClassName(), 'MembershipPayment');
+    return new CRM_Civirules_TriggerData_EntityDefinition($this->objectName, $this->objectName, $this->getDaoClassName(), 'ParticipantPayment');
   }
 
   /**
@@ -31,14 +31,14 @@ class CRM_CivirulesPostTrigger_MembershipPayment extends CRM_Civirules_Trigger_P
    * @return string
    */
   protected function getDaoClassName() {
-    return 'CRM_Member_DAO_MembershipPayment';
+    return 'CRM_Event_DAO_ParticipantPayment';
   }
 
   public function getAdditionalEntities() {
     $entity_definitions = parent::getAdditionalEntities();
     $definitions = [
-    //  ['Membership Payment', 'MembershipPayment', 'CRM_Member_DAO_MembershipPayment' ],
-      ['Membership', 'Membership', 'CRM_Member_DAO_Membership' ],
+      ['Participant', 'Participant', 'CRM_Event_DAO_Participant' ],
+      ['Event', 'Event', 'CRM_Event_DAO_Event' ],
       ['Contribution', 'Contribution', 'CRM_Contribute_DAO_Contribution' ],
     ];
     $entity_definitions = [];
@@ -54,20 +54,23 @@ class CRM_CivirulesPostTrigger_MembershipPayment extends CRM_Civirules_Trigger_P
   }
 
   public function getTriggerDescription() {
-    return E::ts('Provides Membership and Contribution for Conditions and Actions.', ['1' => $this->op]);
+    return E::ts('Provides Participant and Contribution for Conditions and Actions.', ['1' => $this->op]);
   }
 
   public function alterTriggerData(CRM_Civirules_TriggerData_TriggerData &$triggerData) {
-    $membership_payment = $triggerData->getEntityData('MembershipPayment');
-    if ($membership_payment['contribution_id']) {
-      $contribution = $this->crm('Contribution', 'getsingle', ['id' => $membership_payment['contribution_id']]);
+    $participant_payment = $triggerData->getEntityData('ParticipantPayment');
+    if ($participant_payment['contribution_id']) {
+      $contribution = $this->crm('Contribution', 'getsingle', ['id' => $participant_payment['contribution_id']]);
       $triggerData->setEntityData('Contribution', $contribution);
     } 
-    if ($membership_payment['membership_id']) {
-      $membership = $this->crm('Membership', 'getsingle', ['id' => $membership_payment['membership_id']]);
-      $triggerData->setEntityData('Membership', $membership);
+    if ($participant_payment['participant_id']) {
+      $participant = $this->crm('Participant', 'getsingle', ['id' => $participant_payment['participant_id']]);
+      $triggerData->setEntityData('Participant', $participant);
+      if (!empty($participant['event_id'])) {
+        $event = $this->crm('Event', 'getsingle', ['id' => $participant['event_id']]);
+        $triggerData->setEntityData('Event', $event);
+      }
     } 
-    CRM_Core_Error::debug_var(__CLASS__ . __FUNCTION__, $triggerData);
   }
 
   protected function crm($entity, $op, $params) {
