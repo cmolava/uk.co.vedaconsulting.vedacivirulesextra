@@ -1,4 +1,6 @@
 [
   {"name":"veda_new_membership_payment","label":"Membership Payment is added (Extra)","object_name":"MembershipPayment","op":"create","class_name":"CRM_CivirulesPostTrigger_MembershipPayment","cron":"0"},
-  {"name":"veda_changed_membership_payment","label":"Membership Payment is changed (Extra)","object_name":"MembershipPayment","op":"edit","class_name":"CRM_CivirulesPostTrigger_MembershipPayment","cron":"0"}
+  {"name":"veda_changed_membership_payment","label":"Membership Payment is changed (Extra)","object_name":"MembershipPayment","op":"edit","class_name":"CRM_CivirulesPostTrigger_MembershipPayment","cron":"0"},
+  {"name":"veda_new_participant_payment","label":"Participant Payment is added (Extra)","object_name":"ParticipantPayment","op":"create","class_name":"CRM_CivirulesPostTrigger_ParticipantPayment","cron":"0"},
+  {"name":"veda_changed_participant_payment","label":"Participant Payment is changed (Extra)","object_name":"ParticipantPayment","op":"edit","class_name":"CRM_CivirulesPostTrigger_ParticipantPayment","cron":"0"}
 ]
